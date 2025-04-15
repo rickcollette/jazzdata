@@ -21,24 +21,52 @@ var (
 	ErrMetadataNotFound = errors.New("metadata not found")
 )
 
+// GetMetadataFromFile extracts detailed metadata from an audio file.
 func GetMetadataFromFile(path string) (models.Metadata, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return models.Metadata{}, err
 	}
 	defer f.Close()
+
 	m, err := tag.ReadFrom(f)
 	if err != nil {
 		return models.Metadata{}, err
 	}
+
 	album := m.Album()
 	artist := m.Artist()
 	if album == "" || artist == "" {
 		return models.Metadata{}, ErrMissingMetadata
 	}
-	return models.Metadata{Album: album, Artist: artist}, nil
+
+	title := m.Title()
+	track, totalTrack := m.Track()
+	disc, totalDisc := m.Disc()
+
+	raw := m.Raw()
+
+	md := models.Metadata{
+		Album:       album,
+		Artist:      artist,
+		Title:       title,
+		AlbumArtist: m.AlbumArtist(),
+		Composer:    m.Composer(),
+		Comment:     m.Comment(),
+		Genre:       m.Genre(),
+		Year:        m.Year(),
+		TrackNumber: track,
+		TrackTotal:  totalTrack,
+		DiscNumber:  disc,
+		DiscTotal:   totalDisc,
+		Raw:         raw,
+	}
+
+	return md, nil
 }
 
+// GetMetadataFromDirectory searches through a directory for a supported audio file
+// and returns its metadata.
 func GetMetadataFromDirectory(path string) (models.Metadata, error) {
 	var tries int
 	var result models.Metadata

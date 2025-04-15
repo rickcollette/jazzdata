@@ -1,7 +1,6 @@
 package jazzdata
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -19,7 +18,7 @@ func NewCache(cacheFile string) *Cache {
 	}
 	if cacheFile != "" {
 		if _, err := os.Stat(cacheFile); err == nil {
-			data, err := ioutil.ReadFile(cacheFile)
+			data, err := os.ReadFile(cacheFile)
 			if err == nil {
 				c.Entries = strings.Split(string(data), "\n")
 			}
@@ -49,7 +48,7 @@ func (c *Cache) Save() error {
 		return nil
 	}
 	data := strings.Join(c.Entries, "\n")
-	err := ioutil.WriteFile(c.CacheFile, []byte(data), 0644)
+	err := os.WriteFile(c.CacheFile, []byte(data), 0644)
 	if err == nil {
 		c.saved = true
 	}

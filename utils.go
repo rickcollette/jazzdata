@@ -6,7 +6,6 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
-	"io/ioutil"
 	"mime"
 	"net/http"
 	"os"
@@ -135,7 +134,7 @@ func GetCover(p string) string {
 		dir = filepath.Dir(p)
 	}
 
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return ""
 	}
@@ -155,7 +154,7 @@ func GetCover(p string) string {
 }
 
 func HasSong(dir string) bool {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return false
 	}
